@@ -2,6 +2,8 @@ package system;
 
 import bonus.Bonus;
 import entity.Enemy;
+import entity.Projectile;
+
 import org.example.GamePanel;
 
 public class CollisionManager {
@@ -19,6 +21,7 @@ public class CollisionManager {
         checkProjectileEnemy();
         checkPlayerEnemy();
         checkPlayerBonus();
+        checkProjectilePlayer();
     }
 
     // Collision tir ↔ ennemi
@@ -73,6 +76,26 @@ public class CollisionManager {
                 }
 
                 gp.bonuses.remove(i);
+            }
+        }
+    }
+
+    // Collision tir ennemi ↔ joueur
+    private void checkProjectilePlayer() {
+        
+        // On parcourt tous les ennemis
+        for(int i = gp.enemies.size() - 1; i >= 0; i--) {
+            Enemy e = gp.enemies.get(i);
+            
+            // On parcourt tous les projectiles de CET ennemi
+            for(int j = e.projectiles.size() - 1; j >= 0; j--) {
+                Projectile p = e.projectiles.get(j);
+                
+                // Si le tir touche le joueur
+                if(gp.player.getBounds().intersects(p.getBounds())) {
+                    gp.player.life--;         // Le joueur perd une vie
+                    e.projectiles.remove(j);  // Le tir disparaît
+                }
             }
         }
     }

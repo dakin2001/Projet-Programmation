@@ -6,6 +6,7 @@ import entity.Player;
 import system.CollisionManager;
 import system.ScoreManager;
 import ui.UI;
+import ui.Menu;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -39,10 +40,16 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Système principal
     Thread gameThread;
-    KeyHandler keyHandler = new KeyHandler();
+    KeyHandler keyHandler = new KeyHandler(this);
 
     // Joueur principal
     public Player player = new Player(this, keyHandler);
+
+    public int gameState;
+    public final int playState = 1;
+    public final int pauseState = 2;
+
+    public Menu menu = new Menu(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -50,6 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
+        gameState = playState;
     }
 
     // Lance la boucle de jeu
@@ -83,31 +91,35 @@ public class GamePanel extends JPanel implements Runnable {
     // Mise à jour globale du jeu
     public void update() {
 
-        // Restart si mort
-        if(player.life <= 0 && keyHandler.restartPressed) {
-            restartGame();
-            return;
+        if(gameState == playState){
+            player.update();
+            // Restart si mort
+            if(player.life <= 0 && keyHandler.restartPressed) {
+                restartGame();
+                return;
+            }
+
+            // Stop si mort
+            if(player.life <= 0) return;
+
+            // Update joueur
+            player.update();
+
+            // Gestion ennemis
+            spawnEnemies();
+            updateEnemies();
+
+            // Gestion bonus
+            spawnBonus();
+            updateBonuses();
+
+            // Gestion collisions
+            collisionManager.checkAll();
+
+            // Nettoyage
+            cleanEnemies();
         }
 
-        // Stop si mort
-        if(player.life <= 0) return;
-
-        // Update joueur
-        player.update();
-
-        // Gestion ennemis
-        spawnEnemies();
-        updateEnemies();
-
-        // Gestion bonus
-        spawnBonus();
-        updateBonuses();
-
-        // Gestion collisions
-        collisionManager.checkAll();
-
-        // Nettoyage
-        cleanEnemies();
     }
 
     // Affichage du jeu
@@ -124,6 +136,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Dessine interface
         ui.draw(g2);
+
+        if(gameState == pauseState) {
+            menu.draw(g2);
+        }
 
         g2.dispose();
     }

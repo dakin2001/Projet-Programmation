@@ -1,97 +1,87 @@
 package entity;
 
-
 import org.example.GamePanel;
 import org.example.KeyHandler;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Player {
+public class Player extends Entity {
 
-    // Liste des tirs
     public ArrayList<Projectile> projectiles = new ArrayList<>();
-
-    // Références
     GamePanel gp;
     KeyHandler keyH;
-
-    // Vie du joueur
-    public int life = 3;
-
-    // Position
-    public int x, y;
-
-    // Vitesse déplacement
-    int speed = 5;
-
-    // Gestion tir
-    public int shootCooldown = 20;
-
-    // Timer bonus tir
-    public int boostTimer = 0;
+    
+    // Variables pour la gestion des tirs et des bonus
+    public int shootCooldown = 0; 
+    public int boostTimer = 0; // Ajout du timer pour le bonus de cadence
+    private final int DEFAULT_COOLDOWN = 20; // Cadence normale
 
     public Player(GamePanel gp, KeyHandler keyH) {
+        // x, y, largeur(40), hauteur(40), vitesse(8), vie(3)
+        super(gp.screenWidth / 2 - 20, gp.screenHeight - 100, 40, 40, 8, 3);
         this.gp = gp;
         this.keyH = keyH;
-
-        // Position de départ
-        x = gp.screenWidth / 2 - 20;
-        y = gp.screenHeight - 100;
     }
 
+    @Override
     public void update() {
 
-        // Déplacement horizontal
+        // Déplacement latéral
         if(keyH.leftPressed) x -= speed;
         if(keyH.rightPressed) x += speed;
 
-        // Limites écran
+        // Limites de l'écran
         if(x < 0) x = 0;
-        if(x > gp.screenWidth - 40) x = gp.screenWidth - 40;
+        if(x > gp.screenWidth - width) x = gp.screenWidth - width;
 
-        // Tir automatique
-        shootCooldown--;
-        if(shootCooldown <= 0) {
-            projectiles.add(new Projectile(x + 18, y));
-            shootCooldown = 20;
+        // Baisse du cooldown de tir à chaque frame
+        if(shootCooldown > 0) {
+            shootCooldown--;
         }
 
-        // Update des tirs
+        // Baisse du timer de bonus à chaque frame s'il est actif
+        if(boostTimer > 0) {
+            boostTimer--;
+        }
+
+        // Tir manuel
+        if(keyH.spacePressed && shootCooldown == 0) {
+            // Création du projectile vers le haut (-1)
+            projectiles.add(new Projectile(x + (width / 2) - 2, y, 10, -1));
+            
+            // Si le bonus est actif, la cadence est très rapide (5), sinon elle est normale (20)
+            if(boostTimer > 0) {
+                shootCooldown = 5;
+            } else {
+                shootCooldown = DEFAULT_COOLDOWN;
+            }
+        }
+
+        // Mise à jour de la position des tirs
         for(int i = 0; i < projectiles.size(); i++) {
             projectiles.get(i).update();
         }
-
-        // Gestion bonus tir rapide
-        if(boostTimer > 0) {
-            boostTimer--;
-
-            if(boostTimer == 0) {
-                shootCooldown = 20; // Retour normal
-            }
-        }
     }
 
+    @Override
     public void draw(Graphics2D g2) {
-
-        // Dessine joueur
+        // Dessin du joueur
         g2.setColor(Color.white);
-        g2.fillRect(x, y, 40, 40);
+        g2.fillRect(x, y, width, height);
 
-        // Dessine tirs
+        // Dessin des tirs
         for(Projectile p : projectiles) {
             p.draw(g2);
         }
     }
 
-    // Hitbox joueur
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, 40, 40);
-    }
-
-    // Ajoute de la vie avec limite
+    // Méthode pour ajouter de la vie (appelée par le CollisionManager)
     public void addLife(int value) {
         life += value;
-        if(life > 3) life = 3;
+        // On empêche le joueur d'avoir plus de 3 vies
+        if(life > 3) {
+            life = 3;
+        }
     }
 }

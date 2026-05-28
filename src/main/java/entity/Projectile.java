@@ -2,32 +2,26 @@ package entity;
 
 import java.awt.*;
 
-public class Projectile {
+public class Projectile extends Entity {
 
-    // Position du tir
-    public int x, y;
+    // Direction : -1 pour aller vers le haut, 1 pour aller vers le bas
+    public int direction; 
 
-    // Vitesse du tir
-    int speed = 10;
-
-    public Projectile(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Projectile(int x, int y, int speed, int direction) {
+        // x, y, largeur(5), hauteur(10), vitesse(10), vie(1 - bien qu'inutile ici, on respecte le parent)
+        super(x, y, 5, 10, speed, 1);
+        this.direction = direction;
     }
 
-    // Fait monter le tir
+    @Override
     public void update() {
-        y -= speed;
+        // La vitesse est multipliée par la direction (-1 ou 1)
+        y += speed * direction;
     }
 
-    // Dessine le projectile
+    @Override
     public void draw(Graphics2D g2) {
         g2.setColor(Color.yellow);
-        g2.fillRect(x, y, 5, 10);
-    }
-
-    // Hitbox du tir
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, 5, 10);
+        g2.fillRect(x, y, width, height); 
     }
 }

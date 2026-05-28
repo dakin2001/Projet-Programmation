@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 public class Main {
 
     // Point d'entrée du programme
-    static void main(String[] args) {
+    public static void main(String[] args) {
 
         // Création de la fenêtre
         JFrame window = new JFrame();
