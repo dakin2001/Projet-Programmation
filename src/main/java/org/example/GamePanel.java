@@ -1,112 +1,181 @@
 package org.example;
 
-import java.awt.Dimension;
-import java.awt.Color;
-import javax.swing.JPanel;
-
+import bonus.Bonus;
+import entity.Enemy;
 import entity.Player;
-import tile.TileManager;
+import system.CollisionManager;
+import system.ScoreManager;
+import ui.UI;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.JPanel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
 
-/**
- * Panel principal du jeu contenant la map principale
- *
- */
-public class GamePanel extends JPanel implements Runnable{
-	
-	//Param�tres de l'�cran
-	final int ORIGINAL_TILE_SIZE = 16; 							// une tuile de taille 16x16
-	final int SCALE = 3; 										// �chelle utilis�e pour agrandir l'affichage
-	public final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE; 	// 48x48
-	public final int MAX_SCREEN_COL = 16;
-	public final int MAX_SCREE_ROW = 12; 					 	// ces valeurs donnent une r�solution 4:3
-	public final int SCREEN_WIDTH = TILE_SIZE * MAX_SCREEN_COL; // 768 pixels
-	public final int SCREEN_HEIGHT = TILE_SIZE * MAX_SCREE_ROW;	// 576 pixels
+public class GamePanel extends JPanel implements Runnable {
 
-	// FPS : taux de rafraichissement
-	int m_FPS;
-	
-	// Cr�ation des diff�rentes instances (Player, KeyHandler, TileManager, GameThread ...)
-	KeyHandler m_keyH;
-	Thread m_gameThread;
-	Player m_player;
-	TileManager m_tileM;
-		
-	/**
-	 * Constructeur
-	 */
-	public GamePanel() {
-		m_FPS = 60;				
-		m_keyH = new KeyHandler();
-		m_player = new Player(this, m_keyH);
-		m_tileM = new TileManager(this);
-		
-		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-		this.setBackground(Color.black);
-		this.setDoubleBuffered(true);
-		this.addKeyListener(m_keyH);
-		this.setFocusable(true);
-	}
-	
-	/**
-	 * Lancement du thread principal
-	 */
-	public void startGameThread() {
-		m_gameThread = new Thread(this);
-		m_gameThread.start();
-	}
-	
-	public void run() {
-		
-		double drawInterval = 1000000000/m_FPS; // rafraichissement chaque 0.0166666 secondes
-		double nextDrawTime = System.nanoTime() + drawInterval; 
-		
-		while(m_gameThread != null) { //Tant que le thread du jeu est actif
-			
-			//Permet de mettre � jour les diff�rentes variables du jeu
-			this.update();
-			
-			//Dessine sur l'�cran le personnage et la map avec les nouvelles informations. la m�thode "paintComponent" doit obligatoirement �tre appel�e avec "repaint()"
-			this.repaint();
-			
-			//Calcule le temps de pause du thread
-			try {
-				double remainingTime = nextDrawTime - System.nanoTime();
-				remainingTime = remainingTime/1000000;
-				
-				if(remainingTime < 0) {
-					remainingTime = 0;
-				}
-				
-				Thread.sleep((long)remainingTime);
-				nextDrawTime += drawInterval;
-				
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
+    // Gestion spawn ennemis et bonus
+    Random random = new Random();
+    int spawnTimer = 0;
+    int bonusTimer = 0;
 
-	/**
-	 * Mise � jour des donn�es des entit�s
-	 */
-	public void update() {
-		m_player.update();
-	}
-	
-	/**
-	 * Affichage des �l�ments
-	 */
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		m_tileM.draw(g2);
-		m_player.draw(g2);
-		g2.dispose();
-	}
-	
+    // Listes des objets du jeu
+    public ArrayList<Enemy> enemies = new ArrayList<>();
+    public ArrayList<Bonus> bonuses = new ArrayList<>();
+
+    // Gestion du score
+    public ScoreManager scoreManager = new ScoreManager();
+
+    // Gestion collisions et affichage UI
+    CollisionManager collisionManager = new CollisionManager(this);
+    UI ui = new UI(this);
+
+    // Paramètres écran
+    final int tileSize = 48;
+    final int maxScreenCol = 16;
+    final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
+
+    // Système principal
+    Thread gameThread;
+    KeyHandler keyHandler = new KeyHandler();
+
+    // Joueur principal
+    public Player player = new Player(this, keyHandler);
+
+    public GamePanel() {
+        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+        this.setBackground(Color.black);
+        this.setDoubleBuffered(true);
+        this.addKeyListener(keyHandler);
+        this.setFocusable(true);
+    }
+
+    // Lance la boucle de jeu
+    public void startGameThread() {
+        gameThread = new Thread(this);
+        gameThread.start();
+    }
+
+    // Boucle principale du jeu
+    @Override
+    public void run() {
+
+        double drawInterval = 1000000000 / 60;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+
+        while(gameThread != null) {
+
+            long currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+
+            if(delta >= 1) {
+                update();
+                repaint();
+                delta--;
+            }
+        }
+    }
+
+    // Mise à jour globale du jeu
+    public void update() {
+
+        // Restart si mort
+        if(player.life <= 0 && keyHandler.restartPressed) {
+            restartGame();
+            return;
+        }
+
+        // Stop si mort
+        if(player.life <= 0) return;
+
+        // Update joueur
+        player.update();
+
+        // Gestion ennemis
+        spawnEnemies();
+        updateEnemies();
+
+        // Gestion bonus
+        spawnBonus();
+        updateBonuses();
+
+        // Gestion collisions
+        collisionManager.checkAll();
+
+        // Nettoyage
+        cleanEnemies();
+    }
+
+    // Affichage du jeu
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+
+        // Dessine joueur
+        player.draw(g2);
+
+        // Dessine ennemis et bonus
+        for(Enemy e : enemies) e.draw(g2);
+        for(Bonus b : bonuses) b.draw(g2);
+
+        // Dessine interface
+        ui.draw(g2);
+
+        g2.dispose();
+    }
+
+    // Spawn des ennemis
+    private void spawnEnemies() {
+        spawnTimer--;
+        if(spawnTimer <= 0) {
+            int x = random.nextInt(screenWidth - 40);
+            enemies.add(new Enemy(x, 0));
+            spawnTimer = 60;
+        }
+    }
+
+    // Update des ennemis
+    private void updateEnemies() {
+        for(Enemy e : enemies) e.update();
+    }
+
+    // Update des bonus
+    private void updateBonuses() {
+        for(Bonus b : bonuses) b.update();
+    }
+
+    // Spawn des bonus
+    private void spawnBonus() {
+        bonusTimer--;
+        if(bonusTimer <= 0) {
+            int x = random.nextInt(screenWidth - 30);
+            int type = random.nextInt(2);
+            bonuses.add(new Bonus(x, 0, type));
+            bonusTimer = 300;
+        }
+    }
+
+    // Supprime ennemis hors écran
+    private void cleanEnemies() {
+        for(int i = enemies.size() - 1; i >= 0; i--) {
+            if(enemies.get(i).y > screenHeight) enemies.remove(i);
+        }
+    }
+
+    // Reset de la partie
+    public void restartGame() {
+        player.life = 3;
+        scoreManager.score = 0;
+        enemies.clear();
+        player.projectiles.clear();
+
+        player.x = screenWidth / 2 - 20;
+        player.y = screenHeight - 100;
+
+        spawnTimer = 0;
+    }
 }

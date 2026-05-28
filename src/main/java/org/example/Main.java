@@ -2,30 +2,39 @@ package org.example;
 
 import javax.swing.JFrame;
 
-/**
- * 
- * Classe principale du jeu
- *
- */
 public class Main {
 
-	public static void main(String[] args) {
+    // Point d'entrée du programme
+    static void main(String[] args) {
 
-		//Fen�tre de lancement du jeu
-		JFrame window = new JFrame();
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setResizable(false);
-		window.setTitle("ESIR1 - Projet Prog");
-		
-		//Ajout du panel du jeu et d�marrage du thread principal
-		GamePanel gamePanel = new GamePanel();
-		window.add(gamePanel);
-		window.pack();
-		
-		window.setLocationRelativeTo(null);
-		window.setVisible(true);
-		gamePanel.startGameThread();	
+        // Création de la fenêtre
+        JFrame window = new JFrame();
 
-	}
+        // Ferme le programme quand on quitte
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Empêche le redimensionnement
+        window.setResizable(false);
+
+        // Définit le titre
+        window.setTitle("NoGravity");
+
+        // Création du panel du jeu
+        GamePanel gamePanel = new GamePanel();
+
+        // Ajoute le panel à la fenêtre
+        window.add(gamePanel);
+
+        // Ajuste la taille de la fenêtre
+        window.pack();
+
+        // Centre la fenêtre
+        window.setLocationRelativeTo(null);
+
+        // Rend la fenêtre visible
+        window.setVisible(true);
+
+        // Lance le game loop
+        gamePanel.startGameThread();
+    }
 }
