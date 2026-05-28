@@ -9,7 +9,7 @@ public class Projectile extends Entity {
 
     public Projectile(int x, int y, int speed, int direction) {
         // x, y, largeur(5), hauteur(10), vitesse(10), vie(1 - bien qu'inutile ici, on respecte le parent)
-        super(x, y, 5, 10, speed, 1);
+        super(x, y, system.GameConfig.PROJECTILE_WIDTH, system.GameConfig.PROJECTILE_HEIGHT, speed, 1);
         this.direction = direction;
     }
 

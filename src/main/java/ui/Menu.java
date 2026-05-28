@@ -82,12 +82,12 @@ public class Menu {
 
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         y += 60; g2.drawString("- Détruisez les ennemis rouges.", x, y);
-        y += 30; g2.drawString("- Un ennemi tué = 10 Points (utiles pour la boutique).", x, y);
+        y += 30; g2.drawString("- Un ennemi tué = " + system.GameConfig.SCORE_PER_ENEMY + " Points (utiles pour la boutique).", x, y);
         
         y += 60; g2.drawString("Les Bonus :", x, y);
         y += 40;
         g2.setColor(Color.green); g2.fillRect(x, y - 15, 20, 20);
-        g2.setColor(Color.white); g2.drawString(" : Restaure 1 point de vie (Max 3)", x + 30, y);
+        g2.setColor(Color.white); g2.drawString(" : Restaure 1 point de vie (Max"+system.GameConfig.PLAYER_MAX_LIFE+")", x + 30, y);
         y += 40;
         g2.setColor(Color.cyan); g2.fillRect(x, y - 15, 20, 20);
         g2.setColor(Color.white); g2.drawString(" : Tir rapide temporaire", x + 30, y);
@@ -111,13 +111,13 @@ public class Menu {
         g2.setColor(Color.green);
         g2.drawString("1. +1 Vie", x, y);
         g2.setColor(Color.white);
-        g2.drawString(" (Coût : 50 pts)", x + 100, y);
+        g2.drawString(" (Coût : "+system.GameConfig.PRICE_LIFE+" pts)", x + 100, y);
         
         y += 50;
         g2.setColor(Color.cyan);
         g2.drawString("2. Super Tir Rapide", x, y);
         g2.setColor(Color.white);
-        g2.drawString(" (Coût : 100 pts)", x + 210, y);
+        g2.drawString(" (Coût : "+system.GameConfig.PRICE_BOOST+" pts)", x + 210, y);
     }
 
     private void drawVolume(Graphics2D g2) {

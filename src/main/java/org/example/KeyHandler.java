@@ -62,18 +62,18 @@ public class KeyHandler implements KeyListener {
                 
                 // Achat 1 : La Vie (Coût 50)
                 if(code == KeyEvent.VK_1 || code == KeyEvent.VK_NUMPAD1) {
-                    if(gp.scoreManager.score >= 50 && gp.player.life < 3) {
-                        gp.scoreManager.score -= 50;   // Déduit les points
+                    if(gp.scoreManager.score >= system.GameConfig.PRICE_LIFE && gp.player.life < system.GameConfig.PLAYER_MAX_LIFE) {
+                        gp.scoreManager.score -= system.GameConfig.PRICE_LIFE;   // Déduit les points
                         gp.player.addLife(1);          // Ajoute la vie
                     }
                 }
                 
                 // Achat 2 : Super Tir Rapide (Coût 100)
                 if(code == KeyEvent.VK_2 || code == KeyEvent.VK_NUMPAD2) {
-                    if(gp.scoreManager.score >= 100) {
-                        gp.scoreManager.score -= 100;  // Déduit les points
-                        gp.player.boostTimer += 500;   // Gros bonus de temps
-                        gp.player.shootCooldown = 5;   // Cadence max
+                    if(gp.scoreManager.score >= system.GameConfig.PRICE_BOOST) {
+                        gp.scoreManager.score -= system.GameConfig.PRICE_BOOST;  // Déduit les points
+                        gp.player.boostTimer += system.GameConfig.BOOST_DURATION_SHOP;   // Gros bonus de temps
+                        gp.player.shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;   // Cadence max
                     }
                 }
             }

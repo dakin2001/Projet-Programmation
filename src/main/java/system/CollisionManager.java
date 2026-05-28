@@ -36,7 +36,7 @@ public class CollisionManager {
                 if(e.getBounds().intersects(p.getBounds())) {
                     gp.enemies.remove(i);
                     gp.player.projectiles.remove(j);
-                    gp.scoreManager.addScore(10);
+                    gp.scoreManager.addScore(system.GameConfig.SCORE_PER_ENEMY);
                     break;
                 }
             }
@@ -71,8 +71,8 @@ public class CollisionManager {
 
                 // Bonus tir rapide
                 if(b.type == 1) {
-                    gp.player.shootCooldown = 5;
-                    gp.player.boostTimer = 300;
+                    gp.player.shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;
+                    gp.player.boostTimer = system.GameConfig.BOOST_DURATION_BONUS;
                 }
 
                 gp.bonuses.remove(i);

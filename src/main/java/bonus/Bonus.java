@@ -8,7 +8,7 @@ public class Bonus {
     public int x, y;
 
     // Vitesse de descente
-    int speed = 2;
+    int speed = system.GameConfig.BONUS_SPEED;
 
     // Type de bonus (0 = vie, 1 = tir rapide)
     public int type;
@@ -33,11 +33,11 @@ public class Bonus {
             g2.setColor(Color.cyan); // Bonus tir rapide
         }
 
-        g2.fillRect(x, y, 30, 30);
+        g2.fillRect(x, y, system.GameConfig.BONUS_SIZE, system.GameConfig.BONUS_SIZE);
     }
 
     // Hitbox du bonus
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 30, 30);
+        return new Rectangle(x, y, system.GameConfig.BONUS_SIZE, system.GameConfig.BONUS_SIZE);
     }
 }

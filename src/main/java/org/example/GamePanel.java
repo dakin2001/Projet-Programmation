@@ -7,6 +7,7 @@ import system.CollisionManager;
 import system.ScoreManager;
 import ui.UI;
 import ui.Menu;
+import system.GameConfig;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -35,8 +36,8 @@ public class GamePanel extends JPanel implements Runnable {
     final int tileSize = 48;
     final int maxScreenCol = 16;
     final int maxScreenRow = 12;
-    public final int screenWidth = tileSize * maxScreenCol;
-    public final int screenHeight = tileSize * maxScreenRow;
+    public final int screenWidth = system.GameConfig.SCREEN_WIDTH; // tileSize * maxScreenCol;
+    public final int screenHeight = system.GameConfig.SCREEN_HEIGHT; // tileSize * maxScreenRow;
 
     // Système principal
     Thread gameThread;
@@ -70,7 +71,7 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void run() {
 
-        double drawInterval = 1000000000 / 60;
+        double drawInterval = 1000000000 / system.GameConfig.FPS; // 1 seconde / FPS
         double delta = 0;
         long lastTime = System.nanoTime();
 
@@ -150,7 +151,7 @@ public class GamePanel extends JPanel implements Runnable {
         if(spawnTimer <= 0) {
             int x = random.nextInt(screenWidth - 40);
             enemies.add(new Enemy(x, 0));
-            spawnTimer = 60;
+            spawnTimer = system.GameConfig.ENEMY_SPAWN_RATE;
         }
     }
 
@@ -171,7 +172,7 @@ public class GamePanel extends JPanel implements Runnable {
             int x = random.nextInt(screenWidth - 30);
             int type = random.nextInt(2);
             bonuses.add(new Bonus(x, 0, type));
-            bonusTimer = 300;
+            bonusTimer = system.GameConfig.BONUS_SPAWN_RATE;
         }
     }
 

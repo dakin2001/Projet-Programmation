@@ -15,14 +15,15 @@ public class Enemy extends Entity {
 
     public Enemy(int x, int y) {
         // x, y, largeur(40), hauteur(40), vitesse(1), vie(1)
-        super(x, y, 40, 40, 1, 1);
+        super(x, y, system.GameConfig.ENEMY_SIZE, system.GameConfig.ENEMY_SIZE, system.GameConfig.ENEMY_SPEED, 1);
+        this.shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN;
     }
 
     @Override
     public void update() {
         // Descente automatique
         moveCounter++;
-        if(moveCounter >= 2) {
+        if(moveCounter >= system.GameConfig.ENEMY_MOVE_DELAY) {
             y += speed;
             moveCounter = 0; // On réinitialise le compteur
         }
@@ -31,8 +32,8 @@ public class Enemy extends Entity {
         shootCooldown--;
         if(shootCooldown <= 0) {
             // direction = 1 (vers le bas)
-            projectiles.add(new Projectile(x + (width / 2) - 2, y + height, 4, 1));
-            shootCooldown = 160; // Réinitialise la cadence
+            projectiles.add(new Projectile(x + (width / 2) - 2, y + height, system.GameConfig.ENEMY_PROJECTILE_SPEED, 1));
+            shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN; // Réinitialise la cadence
         }
 
         // Mise à jour des tirs de l'ennemi

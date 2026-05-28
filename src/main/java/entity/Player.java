@@ -19,7 +19,7 @@ public class Player extends Entity {
 
     public Player(GamePanel gp, KeyHandler keyH) {
         // x, y, largeur(40), hauteur(40), vitesse(8), vie(3)
-        super(gp.screenWidth / 2 - 20, gp.screenHeight - 100, 40, 40, 8, 3);
+        super(gp.screenWidth / 2 - (system.GameConfig.PLAYER_SIZE / 2), gp.screenHeight - 100, system.GameConfig.PLAYER_SIZE, system.GameConfig.PLAYER_SIZE, system.GameConfig.PLAYER_SPEED, system.GameConfig.PLAYER_MAX_LIFE);
         this.gp = gp;
         this.keyH = keyH;
     }
@@ -48,13 +48,13 @@ public class Player extends Entity {
         // Tir manuel
         if(keyH.spacePressed && shootCooldown == 0) {
             // Création du projectile vers le haut (-1)
-            projectiles.add(new Projectile(x + (width / 2) - 2, y, 10, -1));
+            projectiles.add(new Projectile(x + (width / 2) - 2, y, system.GameConfig.PLAYER_PROJECTILE_SPEED, -1));
             
             // Si le bonus est actif, la cadence est très rapide (5), sinon elle est normale (20)
             if(boostTimer > 0) {
-                shootCooldown = 5;
+                shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;
             } else {
-                shootCooldown = DEFAULT_COOLDOWN;
+                shootCooldown = system.GameConfig.PLAYER_NORMAL_COOLDOWN;
             }
         }
 
@@ -80,8 +80,8 @@ public class Player extends Entity {
     public void addLife(int value) {
         life += value;
         // On empêche le joueur d'avoir plus de 3 vies
-        if(life > 3) {
-            life = 3;
+        if(life > system.GameConfig.PLAYER_MAX_LIFE) {
+            life = system.GameConfig.PLAYER_MAX_LIFE;
         }
     }
 }
