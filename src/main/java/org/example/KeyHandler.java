@@ -79,6 +79,12 @@ public class KeyHandler implements KeyListener {
                 }
             }
         }
+        // ÉTAT DE VICTOIRE
+        else if(gp.gameState == gp.winState) {
+            if(code == KeyEvent.VK_R) {
+                restartPressed = true;
+            }
+        }
     }
 
     @Override

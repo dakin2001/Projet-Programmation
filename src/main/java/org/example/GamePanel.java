@@ -52,6 +52,13 @@ public class GamePanel extends JPanel implements Runnable {
     public int gameState;
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int transitionState = 3; // Pendant la cinématique
+    public final int winState = 4;        // Écran de victoire
+
+    // Gestion des niveaux et cinématiques
+    public int currentLevel = 1;
+    public int transitionStep = 0;  // 0 = Vaisseau recule, 1 = Texte, 2 = Vaisseau avance
+    public int transitionTimer = 0; // Chronomètre pour afficher le texte
 
     public Menu menu = new Menu(this);
 
@@ -61,7 +68,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
-        gameState = playState;
+        
+        gameState = transitionState;
+        currentLevel = 1;
+        transitionStep = 1; // On passe l'étape "reculer" pour le tout début
+        player.y = screenHeight + 50; // Le vaisseau commence caché en bas
     }
 
     // Lance la boucle de jeu
@@ -95,18 +106,40 @@ public class GamePanel extends JPanel implements Runnable {
     // Mise à jour globale du jeu
     public void update() {
 
+        // VÉRIFICATION GAME OVER
+        if(gameState == playState && player.life <= 0) {
+            if(keyHandler.restartPressed) {
+                restartGame();
+            }
+            return; // On stoppe la méthode update.
+        }
+
+        // Le fond d'écran bouge TOUT LE TEMPS (même pendant les cinématiques)
+        if(gameState == playState || gameState == transitionState) {
+            background.update();
+        }
+
         if(gameState == playState){
 
-            // Si le joueur est mort, on bloque tout sauf la touche Restart
-            if(player.life <= 0) {
-                if(keyHandler.restartPressed) {
-                    restartGame();
-                }
+            // Vérification Passage Niveau 2
+            if(currentLevel == 1 && scoreManager.score >= system.GameConfig.SCORE_LEVEL_2) {
+                currentLevel = 2;
+                gameState = transitionState;
+                transitionStep = 0; // Le vaisseau va commencer par reculer
+                enemies.clear();    // On nettoie l'écran
+                bonuses.clear();
+                player.projectiles.clear();
                 return;
             }
-            
-            // On fait défiler le fond d'écran
-            background.update();
+
+            // Vérification Victoire Finale
+            if(currentLevel == 2 && scoreManager.score >= system.GameConfig.SCORE_WIN) {
+                gameState = winState;
+                enemies.clear();
+                bonuses.clear();
+                player.projectiles.clear();
+                return;
+            }
             
             // On déplace le joueur
             player.update();
@@ -124,6 +157,40 @@ public class GamePanel extends JPanel implements Runnable {
 
             // Nettoyage
             cleanEnemies();
+        }
+        // --- ÉTAT DE TRANSITION (CINÉMATIQUE) ---
+        else if(gameState == transitionState) {
+            
+            // Étape 0 : Le vaisseau recule jusqu'à disparaître (uniquement pour le Niv 2)
+            if(transitionStep == 0) {
+                player.y += 4; // Vitesse de recul
+                if(player.y > screenHeight + 50) {
+                    transitionStep = 1; // Passe à l'étape texte
+                    player.x = screenWidth / 2 - (system.GameConfig.PLAYER_SIZE / 2); // Recentre le vaisseau
+                }
+            }
+            // Étape 1 : Le vaisseau est caché, on affiche le texte
+            else if(transitionStep == 1) {
+                transitionTimer++;
+                if(transitionTimer >= 150) { // Attend environ 2,5 secondes
+                    transitionStep = 2; // Passe à l'arrivée du vaisseau
+                    transitionTimer = 0;
+                }
+            }
+            // Étape 2 : Le vaisseau arrive par le bas
+            else if(transitionStep == 2) {
+                player.y -= 3; // Vitesse d'arrivée
+                if(player.y <= screenHeight - 100) {
+                    player.y = screenHeight - 100; // Le fixe à sa place exacte
+                    gameState = playState;         // FIN DE LA CINÉMATIQUE, ON JOUE !
+                }
+            }
+        }
+        // --- ÉTAT DE VICTOIRE ---
+        else if(gameState == winState) {
+            if(keyHandler.restartPressed) {
+                restartGame();
+            }
         }
 
     }
@@ -196,11 +263,16 @@ public class GamePanel extends JPanel implements Runnable {
         player.life = 3;
         scoreManager.score = 0;
         enemies.clear();
+        bonuses.clear();
         player.projectiles.clear();
-
-        player.x = screenWidth / 2 - 20;
-        player.y = screenHeight - 100;
-
         spawnTimer = 0;
+
+        // On remet tout au Niveau 1 avec cinématique
+        currentLevel = 1;
+        gameState = transitionState;
+        transitionStep = 1;
+        transitionTimer = 0;
+        player.x = screenWidth / 2 - (system.GameConfig.PLAYER_SIZE / 2);
+        player.y = screenHeight + 50; // Caché en bas
     }
 }

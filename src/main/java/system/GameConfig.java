@@ -108,4 +108,12 @@ public class GameConfig {
     
     /** Chemin vers l'image du fond d'écran. */
     public static final String BACKGROUND_IMAGE = "/background.jpg";
+
+    // --- NIVEAUX ET VICTOIRE ---
+    
+    /** Score requis pour passer au niveau 2. */
+    public static final int SCORE_LEVEL_2 = 100;
+    
+    /** Score requis pour gagner la partie. */
+    public static final int SCORE_WIN = 300;
 }
