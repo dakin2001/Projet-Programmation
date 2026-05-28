@@ -99,4 +99,13 @@ public class GameConfig {
     
     /** Coût en points pour activer le mode Tir Rapide depuis la boutique. */
     public static final int PRICE_BOOST = 100;
+
+
+    // --- ENVIRONNEMENT (FOND D'ÉCRAN) ---
+    
+    /** Vitesse de défilement du fond d'écran (pixels par image). */
+    public static final int BACKGROUND_SPEED = 2;
+    
+    /** Chemin vers l'image du fond d'écran. */
+    public static final String BACKGROUND_IMAGE = "/background.jpg";
 }

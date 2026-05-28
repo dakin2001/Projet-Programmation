@@ -23,7 +23,8 @@ public class KeyHandler implements KeyListener {
             if(code == KeyEvent.VK_RIGHT) rightPressed = true;
             if(code == KeyEvent.VK_SPACE) spacePressed = true;
             if(code == KeyEvent.VK_R) restartPressed = true;
-
+            
+            
             // Ouvrir le menu normal
             if(code == KeyEvent.VK_M) {
                 gp.gameState = gp.pauseState;
@@ -62,15 +63,15 @@ public class KeyHandler implements KeyListener {
                 
                 // Achat 1 : La Vie (Coût 50)
                 if(code == KeyEvent.VK_1 || code == KeyEvent.VK_NUMPAD1) {
-                    if(gp.scoreManager.score >= system.GameConfig.PRICE_LIFE && gp.player.life < system.GameConfig.PLAYER_MAX_LIFE) {
-                        gp.scoreManager.score -= system.GameConfig.PRICE_LIFE;   // Déduit les points
-                        gp.player.addLife(1);          // Ajoute la vie
+                    if(gp.scoreManager.score >= system.GameConfig.PRICE_LIFE && gp.player.life > 0 && gp.player.life < system.GameConfig.PLAYER_MAX_LIFE) {
+                        gp.scoreManager.score -= system.GameConfig.PRICE_LIFE;
+                        gp.player.addLife(1);
                     }
                 }
                 
                 // Achat 2 : Super Tir Rapide (Coût 100)
                 if(code == KeyEvent.VK_2 || code == KeyEvent.VK_NUMPAD2) {
-                    if(gp.scoreManager.score >= system.GameConfig.PRICE_BOOST) {
+                    if(gp.scoreManager.score >= system.GameConfig.PRICE_BOOST && gp.player.life > 0) {
                         gp.scoreManager.score -= system.GameConfig.PRICE_BOOST;  // Déduit les points
                         gp.player.boostTimer += system.GameConfig.BOOST_DURATION_SHOP;   // Gros bonus de temps
                         gp.player.shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;   // Cadence max

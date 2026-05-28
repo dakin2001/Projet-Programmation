@@ -3,11 +3,11 @@ package org.example;
 import bonus.Bonus;
 import entity.Enemy;
 import entity.Player;
+import environment.Background;
 import system.CollisionManager;
 import system.ScoreManager;
 import ui.UI;
 import ui.Menu;
-import system.GameConfig;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -45,6 +45,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Joueur principal
     public Player player = new Player(this, keyHandler);
+    
+    // Le fond d'écran
+    public Background background = new Background();
 
     public int gameState;
     public final int playState = 1;
@@ -93,17 +96,19 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
 
         if(gameState == playState){
-            player.update();
-            // Restart si mort
-            if(player.life <= 0 && keyHandler.restartPressed) {
-                restartGame();
+
+            // Si le joueur est mort, on bloque tout sauf la touche Restart
+            if(player.life <= 0) {
+                if(keyHandler.restartPressed) {
+                    restartGame();
+                }
                 return;
             }
-
-            // Stop si mort
-            if(player.life <= 0) return;
-
-            // Update joueur
+            
+            // On fait défiler le fond d'écran
+            background.update();
+            
+            // On déplace le joueur
             player.update();
 
             // Gestion ennemis
@@ -127,6 +132,9 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+
+        // Dessine le fond d'écran
+        background.draw(g2);
 
         // Dessine joueur
         player.draw(g2);

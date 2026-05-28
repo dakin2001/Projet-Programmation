@@ -15,7 +15,6 @@ public class Player extends Entity {
     // Variables pour la gestion des tirs et des bonus
     public int shootCooldown = 0; 
     public int boostTimer = 0; // Ajout du timer pour le bonus de cadence
-    private final int DEFAULT_COOLDOWN = 20; // Cadence normale
 
     public Player(GamePanel gp, KeyHandler keyH) {
         // x, y, largeur(40), hauteur(40), vitesse(8), vie(3)
