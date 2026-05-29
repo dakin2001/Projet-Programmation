@@ -8,10 +8,10 @@ public class GameConfig {
     public static final int TILE_SIZE = 48;
     
     // Nombre maximum de colonnes affichées à l'écran.
-    public static final int MAX_SCREEN_COL = 20;
+    public static final int MAX_SCREEN_COL = 24;
     
     // Nombre maximum de lignes affichées à l'écran.
-    public static final int MAX_SCREEN_ROW = 15;
+    public static final int MAX_SCREEN_ROW = 16;
     
     // Largeur totale de la fenêtre du jeu.
     public static final int SCREEN_WIDTH = TILE_SIZE * MAX_SCREEN_COL;
@@ -26,7 +26,7 @@ public class GameConfig {
     // PARAMÈTRES DU JOUEUR
     
     // Taille (largeur et hauteur) de la hitbox et du dessin du joueur.
-    public static final int PLAYER_SIZE = 60;
+    public static final int PLAYER_SIZE = 80;
     
     // Vitesse de déplacement du joueur de gauche à droite (pixels par image).
     public static final int PLAYER_SPEED = 8;
@@ -47,8 +47,10 @@ public class GameConfig {
     // PARAMÈTRES DES ENNEMIS
     
     // Taille (largeur et hauteur) de la hitbox et du dessin des ennemis.
-    public static final int ENEMY_SIZE = 60;
-    
+    public static final int ENEMY_SIZE1 = 80;
+    public static final int ENEMY_SIZE2 = 120;
+
+
     // Vitesse de descente de base d'un ennemi (pixels par image).
     public static final int ENEMY_SPEED = 1;
     
@@ -62,7 +64,7 @@ public class GameConfig {
     public static final int ENEMY_PROJECTILE_SPEED = 4;
     
     // Fréquence d'apparition d'un nouvel ennemi (ex: tous les 60 ticks = 1 seconde).
-    public static final int ENEMY_SPAWN_RATE = 180; 
+    public static final int ENEMY_SPAWN_RATE = 30;
 
     // Vie de l'ennemi avancé (Boss).
     public static final int ENEMY_ADVANCED_LIFE = 2;
@@ -92,7 +94,7 @@ public class GameConfig {
     public static final int BONUS_SPEED = 3;
     
     // Fréquence d'apparition aléatoire d'un bonus (tous les 300 ticks = 5 secondes).
-    public static final int BONUS_SPAWN_RATE = 300;
+    public static final int BONUS_SPAWN_RATE = 1200;
     
     // Temps d'activation du bonus "Tir Rapide" lorsqu'il est ramassé sur le terrain.
     public static final int BOOST_DURATION_BONUS = 300; 
@@ -101,7 +103,7 @@ public class GameConfig {
     public static final int BOOST_DURATION_SHOP = 500;  
 
     // Nombre de coups que le bouclier peut encaisser.
-    public static final int SHIELD_MAX_HITS = 3;
+    public static final int SHIELD_MAX_HITS = 1;
     
     // Temps d'affichage (en frames) du popup "+1 Vie" (180 frames = 3 secondes).
     public static final int LIFE_DISPLAY_TIME = 180;
@@ -135,10 +137,10 @@ public class GameConfig {
     // NIVEAUX ET VICTOIRE
     
     // Score requis pour passer au niveau 2.
-    public static final int SCORE_LEVEL_2 = 100;
+    public static final int SCORE_LEVEL_2 = 180;
     
     // Score requis pour gagner la partie.
-    public static final int SCORE_WIN = 300;
+    public static final int SCORE_WIN = 400;
 
     // IMAGES
     public static final String IMG_BONUS_LIFE = "/life.png";

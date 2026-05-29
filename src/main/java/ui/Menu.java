@@ -140,7 +140,7 @@ public class Menu {
         // Bonus Bouclier
         y += 40;
         if (bonusShieldImg != null) g2.drawImage(bonusShieldImg, x, y - 25, 30, 30, null); // (Assure-toi d'avoir chargé l'image en haut de Menu.java)
-        g2.drawString(" Déflecteur : Absorbe 3 dégâts", x + 40, y);
+        g2.drawString(" Déflecteur : Absorbe 1 dégâts", x + 40, y);
     }
 
     private void drawBoutique(Graphics2D g2) {
@@ -172,7 +172,7 @@ public class Menu {
         // NOUVEAU - Article 3 : Bouclier
         y += 60;
         g2.setColor(new Color(170, 100, 255)); // Une belle couleur violette
-        g2.drawString("3. Bouclier (3 coups)", x, y);
+        g2.drawString("3. Bouclier (1 coups)", x, y);
         g2.setColor(Color.lightGray);
         g2.drawString(" (Coût : "+system.GameConfig.PRICE_SHIELD+" pts)", x + 290, y);
     }

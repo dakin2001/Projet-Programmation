@@ -23,25 +23,34 @@ public class Enemy extends Entity {
     private int moveDelay;
 
     public Enemy(GamePanel gp, int x, int y, int type) {
-        // On initialise avec les valeurs par défaut
-        super(x, y, system.GameConfig.ENEMY_SIZE, system.GameConfig.ENEMY_SIZE, system.GameConfig.ENEMY_SPEED, 1);
-        this.shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN;
+        // 1. On appelle d'abord le constructeur parent avec des valeurs par défaut temporaires (0)
+        super(x, y, 0, 0, 0, 1);
+
         this.gp = gp;
         this.type = type;
+        this.shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN;
 
+        // 2. On configure TOUTES les variables (y compris width et height héritées d'Entity) selon le type
         try {
             if (type == 1) {
-                image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY));
-                this.life = 1;
+                this.width = system.GameConfig.ENEMY_SIZE1;   // Utilise la constante de taille 1 (80)
+                this.height = system.GameConfig.ENEMY_SIZE1;
                 this.speed = system.GameConfig.ENEMY_SPEED;
+                this.life = 1;
                 this.moveDelay = system.GameConfig.ENEMY_MOVE_DELAY;
+                image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY));
+
             } else if (type == 2) {
-                image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY_ADVANCED));
-                this.life = system.GameConfig.ENEMY_ADVANCED_LIFE;
+                this.width = system.GameConfig.ENEMY_SIZE2;   // Utilise la constante de taille 2 (160)
+                this.height = system.GameConfig.ENEMY_SIZE2;
                 this.speed = system.GameConfig.ENEMY_ADVANCED_SPEED;
+                this.life = system.GameConfig.ENEMY_ADVANCED_LIFE;
                 this.moveDelay = system.GameConfig.ENEMY_ADVANCED_MOVE_DELAY;
+                image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY_ADVANCED));
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
