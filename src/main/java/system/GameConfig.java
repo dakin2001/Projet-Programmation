@@ -8,10 +8,10 @@ public class GameConfig {
     public static final int TILE_SIZE = 48;
     
     /** Nombre maximum de colonnes affichées à l'écran. */
-    public static final int MAX_SCREEN_COL = 16;
+    public static final int MAX_SCREEN_COL = 20;
     
     /** Nombre maximum de lignes affichées à l'écran. */
-    public static final int MAX_SCREEN_ROW = 12;
+    public static final int MAX_SCREEN_ROW = 15;
     
     /** Largeur totale de la fenêtre du jeu. */
     public static final int SCREEN_WIDTH = TILE_SIZE * MAX_SCREEN_COL;
@@ -64,6 +64,18 @@ public class GameConfig {
     /** Fréquence d'apparition d'un nouvel ennemi (ex: tous les 60 ticks = 1 seconde). */
     public static final int ENEMY_SPAWN_RATE = 60; 
 
+    /** Vie de l'ennemi avancé (Boss). */
+    public static final int ENEMY_ADVANCED_LIFE = 2;
+    
+    /** Vitesse de base de l'ennemi avancé. */
+    public static final int ENEMY_ADVANCED_SPEED = 2;
+    
+    /** Délai de mouvement de l'ennemi avancé (bouge toutes les X frames). */
+    public static final int ENEMY_ADVANCED_MOVE_DELAY = 3;
+    
+    /** Pourcentage de chance (sur 100) qu'un ennemi avancé apparaisse au niveau 2. */
+    public static final int ENEMY_ADVANCED_SPAWN_CHANCE = 30;
+
     
     // --- PARAMÈTRES DES PROJECTILES & BONUS ---
     
@@ -100,6 +112,9 @@ public class GameConfig {
     /** Coût en points pour activer le mode Tir Rapide depuis la boutique. */
     public static final int PRICE_BOOST = 100;
 
+    /** Multiplicateur de score pour l'ennemi avancé. */
+    public static final double ENEMY_ADVANCED_SCORE_MULT = 1.5;
+
 
     // --- ENVIRONNEMENT (FOND D'ÉCRAN) ---
     
@@ -107,7 +122,7 @@ public class GameConfig {
     public static final int BACKGROUND_SPEED = 2;
     
     /** Chemin vers l'image du fond d'écran. */
-    public static final String BACKGROUND_IMAGE = "/background.jpg";
+    public static final String BACKGROUND_IMAGE = "/background2.jpg";
 
     // --- NIVEAUX ET VICTOIRE ---
     
@@ -116,4 +131,22 @@ public class GameConfig {
     
     /** Score requis pour gagner la partie. */
     public static final int SCORE_WIN = 300;
+
+    // --- IMAGES ---
+    public static final String IMG_BONUS_LIFE = "/life.png";
+    public static final String IMG_BONUS_SPEED = "/blaster.png";
+    public static final String IMG_HEART_FULL = "/full_life.png";
+    public static final String IMG_HEART_EMPTY = "/empty_life.png";
+    public static final String IMG_PROJECTILE_PLAYER = "/projectile.png";
+    public static final String IMG_PROJECTILE_ENEMY = "/enemy_projectile.png";
+    public static final String IMG_PLAYER = "/main.png";
+    public static final String IMG_ENEMY = "/ship_ennemy.png";
+    public static final String IMG_ENEMY_ADVANCED = "/boss.png";
+
+    // --- AUDIO ---
+    public static final String AUDIO_BACKGROUND = "/theme_son.wav";
+    public static final String AUDIO_SHOOT = "/tir.wav";
+
+    // --- SAUVEGARDE ---
+    public static final String SAVE_FILE_PATH = "scores.txt";
 }

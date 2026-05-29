@@ -2,6 +2,9 @@ package entity;
 
 import java.awt.*;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import org.example.GamePanel; 
 
 public class Enemy extends Entity {
 
@@ -9,14 +12,37 @@ public class Enemy extends Entity {
     public ArrayList<Projectile> projectiles = new ArrayList<>();
     
     // Cadence de tir
-    public int shootCooldown = 160; 
+    public int shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN; 
 
     private int moveCounter = 0;
 
-    public Enemy(int x, int y) {
-        // x, y, largeur(40), hauteur(40), vitesse(1), vie(1)
+    GamePanel gp;
+    BufferedImage image;
+
+    public int type;
+    private int moveDelay;
+
+    public Enemy(GamePanel gp, int x, int y, int type) {
+        // On initialise avec les valeurs par défaut
         super(x, y, system.GameConfig.ENEMY_SIZE, system.GameConfig.ENEMY_SIZE, system.GameConfig.ENEMY_SPEED, 1);
         this.shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN;
+        this.gp = gp;
+        this.type = type;
+
+        // CONFIGURATION SELON LE TYPE AVEC LES CONSTANTES
+        try {
+            if (type == 1) {
+                image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY));
+                this.life = 1;
+                this.speed = system.GameConfig.ENEMY_SPEED;
+                this.moveDelay = system.GameConfig.ENEMY_MOVE_DELAY;
+            } else if (type == 2) {
+                image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY_ADVANCED));
+                this.life = system.GameConfig.ENEMY_ADVANCED_LIFE;
+                this.speed = system.GameConfig.ENEMY_ADVANCED_SPEED;
+                this.moveDelay = system.GameConfig.ENEMY_ADVANCED_MOVE_DELAY;
+            }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @Override
@@ -33,6 +59,8 @@ public class Enemy extends Entity {
         if(shootCooldown <= 0) {
             // direction = 1 (vers le bas)
             projectiles.add(new Projectile(x + (width / 2) - 2, y + height, system.GameConfig.ENEMY_PROJECTILE_SPEED, 1));
+            
+            gp.playShootSound();
             shootCooldown = system.GameConfig.ENEMY_SHOOT_COOLDOWN; // Réinitialise la cadence
         }
 
@@ -45,8 +73,13 @@ public class Enemy extends Entity {
     @Override
     public void draw(Graphics2D g2) {
         // Dessin de l'ennemi
-        g2.setColor(Color.red);
-        g2.fillRect(x, y, width, height);
+        if (image != null) {
+            g2.drawImage(image, x, y, width, height, null);
+        } else {
+            // Dessin de secours si l'image ne charge pas
+            g2.setColor(Color.red);
+            g2.fillRect(x, y, width, height);
+        }
 
         // Dessin de ses tirs
         for(Projectile p : projectiles) {

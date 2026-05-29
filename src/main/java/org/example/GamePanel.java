@@ -49,11 +49,18 @@ public class GamePanel extends JPanel implements Runnable {
     // Le fond d'écran
     public Background background = new Background();
 
+    // La musique de fond
+    public system.Sound music = new system.Sound();
+
+    public system.Sound se = new system.Sound();
+
     public int gameState;
+    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
     public final int transitionState = 3; // Pendant la cinématique
     public final int winState = 4;        // Écran de victoire
+    public int previousState;
 
     // Gestion des niveaux et cinématiques
     public int currentLevel = 1;
@@ -69,7 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
         
-        gameState = transitionState;
+        gameState = titleState; // Commence sur le menu principal
         currentLevel = 1;
         transitionStep = 1; // On passe l'étape "reculer" pour le tout début
         player.y = screenHeight + 50; // Le vaisseau commence caché en bas
@@ -79,6 +86,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+
+        playMusic();
     }
 
     // Boucle principale du jeu
@@ -115,11 +124,13 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // Le fond d'écran bouge TOUT LE TEMPS (même pendant les cinématiques)
-        if(gameState == playState || gameState == transitionState) {
+        if(gameState == playState || gameState == transitionState || gameState == titleState) {
             background.update();
         }
 
         if(gameState == playState){
+
+            scoreManager.playTimeTicks++;
 
             // Vérification Passage Niveau 2
             if(currentLevel == 1 && scoreManager.score >= system.GameConfig.SCORE_LEVEL_2) {
@@ -225,7 +236,17 @@ public class GamePanel extends JPanel implements Runnable {
         spawnTimer--;
         if(spawnTimer <= 0) {
             int x = random.nextInt(screenWidth - 40);
-            enemies.add(new Enemy(x, 0));
+            
+            int enemyType = 1; 
+            
+            // Si on est au niveau 2, on a X% de chance de faire apparaître un boss
+            if(currentLevel >= 2) {
+                if(random.nextInt(100) < system.GameConfig.ENEMY_ADVANCED_SPAWN_CHANCE) {
+                    enemyType = 2;
+                }
+            }
+            
+            enemies.add(new Enemy(this, x, 0, enemyType)); 
             spawnTimer = system.GameConfig.ENEMY_SPAWN_RATE;
         }
     }
@@ -260,19 +281,55 @@ public class GamePanel extends JPanel implements Runnable {
 
     // Reset de la partie
     public void restartGame() {
+
+        // Vérifie si le score correspond à la victoire !
+        boolean isVictory = (scoreManager.score >= system.GameConfig.SCORE_WIN);
+        
+        // N'enregistre le temps que si c'est une victoire
+        scoreManager.checkHighScore(isVictory);
+        scoreManager.reset();
+
         player.life = 3;
-        scoreManager.score = 0;
+        
         enemies.clear();
         bonuses.clear();
         player.projectiles.clear();
         spawnTimer = 0;
 
-        // On remet tout au Niveau 1 avec cinématique
         currentLevel = 1;
-        gameState = transitionState;
+        gameState = titleState; 
         transitionStep = 1;
         transitionTimer = 0;
         player.x = screenWidth / 2 - (system.GameConfig.PLAYER_SIZE / 2);
-        player.y = screenHeight + 50; // Caché en bas
+        player.y = screenHeight + 50;
+    }
+
+    // Lance la musique de fond
+    public void playMusic() {
+        music.setFile(system.GameConfig.AUDIO_BACKGROUND);
+        music.play();
+        music.loop();
+    }
+
+    // Arrête la musique de fond
+    public void stopMusic() {
+        music.stop();
+    }
+
+    public void playShootSound() {
+        se.setFile(system.GameConfig.AUDIO_SHOOT);
+        se.play();
+    }
+
+    public int musicVolume = 3;
+
+    // Méthode pour mettre à jour le volume de la musique ET des tirs
+    public void updateVolume(int scale) {
+        musicVolume = scale;
+        
+        music.volumeScale = musicVolume;
+        music.checkVolume();
+        
+        se.volumeScale = musicVolume;
     }
 }

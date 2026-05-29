@@ -18,7 +18,18 @@ public class KeyHandler implements KeyListener {
 
         int code = e.getKeyCode();
 
-        if(gp.gameState == gp.playState) {
+        if(gp.gameState == gp.titleState) {
+            if(code == KeyEvent.VK_SPACE) {
+                gp.gameState = gp.transitionState; // Lance la cinématique de début !
+            }
+            if(code == KeyEvent.VK_M) {
+                gp.previousState = gp.titleState;  // On retient qu'on vient du titre
+                gp.gameState = gp.pauseState;      // On ouvre le menu
+                gp.menu.page = 0;
+            }
+        }
+
+        else if(gp.gameState == gp.playState) {
             if(code == KeyEvent.VK_LEFT) leftPressed = true;
             if(code == KeyEvent.VK_RIGHT) rightPressed = true;
             if(code == KeyEvent.VK_SPACE) spacePressed = true;
@@ -27,12 +38,14 @@ public class KeyHandler implements KeyListener {
             
             // Ouvrir le menu normal
             if(code == KeyEvent.VK_M) {
+                gp.previousState = gp.playState;  // On retient qu'on vient du jeu
                 gp.gameState = gp.pauseState;
                 gp.menu.page = 0; // Ouvre sur la table des matières
             }
             
             // Raccourci : Ouvrir directement la boutique avec B
             if(code == KeyEvent.VK_B) {
+                gp.previousState = gp.playState;  // On retient qu'on vient du jeu
                 gp.gameState = gp.pauseState;
                 gp.menu.page = 3; // Ouvre directement la page boutique
             }
@@ -41,7 +54,7 @@ public class KeyHandler implements KeyListener {
             
             // Fermer le menu avec M
             if(code == KeyEvent.VK_M) {
-                gp.gameState = gp.playState; 
+                gp.gameState = gp.previousState; // Retour à l'état précédent (jeu ou titre)
             }
             
             // Revenir au menu principal avec Echap
@@ -75,6 +88,19 @@ public class KeyHandler implements KeyListener {
                         gp.scoreManager.score -= system.GameConfig.PRICE_BOOST;  // Déduit les points
                         gp.player.boostTimer += system.GameConfig.BOOST_DURATION_SHOP;   // Gros bonus de temps
                         gp.player.shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;   // Cadence max
+                    }
+                }
+            }
+
+            else if(gp.menu.page == 4) {
+                if(code == KeyEvent.VK_LEFT) {
+                    if(gp.musicVolume > 0) { // Si ce n'est pas déjà à 0
+                        gp.updateVolume(gp.musicVolume - 1);
+                    }
+                }
+                if(code == KeyEvent.VK_RIGHT) {
+                    if(gp.musicVolume < 5) { // Maximum 5
+                        gp.updateVolume(gp.musicVolume + 1);
                     }
                 }
             }

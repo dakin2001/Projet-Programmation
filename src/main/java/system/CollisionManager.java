@@ -33,11 +33,24 @@ public class CollisionManager {
             for(int j = gp.player.projectiles.size() - 1; j >= 0; j--) {
                 var p = gp.player.projectiles.get(j);
 
+                // Si un tir touche un ennemi
                 if(e.getBounds().intersects(p.getBounds())) {
-                    gp.enemies.remove(i);
-                    gp.player.projectiles.remove(j);
-                    gp.scoreManager.addScore(system.GameConfig.SCORE_PER_ENEMY);
-                    break;
+                    
+                    e.life--; // L'ennemi perd 1 point de vie
+                    gp.player.projectiles.remove(j); // Le tir du joueur disparaît
+                    
+                    // Si l'ennemi n'a plus de vie, il meurt
+                    if(e.life <= 0) {
+                        gp.enemies.remove(i);
+                        
+                        // Calcul du score avec la constante
+                        int points = system.GameConfig.SCORE_PER_ENEMY;
+                        if(e.type == 2) {
+                            points = (int)(system.GameConfig.SCORE_PER_ENEMY * system.GameConfig.ENEMY_ADVANCED_SCORE_MULT);
+                        }
+                        gp.scoreManager.addScore(points);
+                    }
+                    break; // On sort de la boucle des projectiles car celui-ci a été détruit
                 }
             }
         }

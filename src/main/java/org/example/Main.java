@@ -17,7 +17,7 @@ public class Main {
         window.setResizable(false);
 
         // Définit le titre
-        window.setTitle("NoGravity");
+        window.setTitle("No Gravity");
 
         // Création du panel du jeu
         GamePanel gamePanel = new GamePanel();
