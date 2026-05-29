@@ -11,7 +11,7 @@ public class Menu {
     public int page = 0; 
     
     // Variables pour les images
-    BufferedImage bonusLife, bonusSpeed, enemyNorm, enemyBoss;
+    BufferedImage bonusLife, bonusSpeed, enemyNorm, enemyBoss, bonusShieldImg;
 
     public Menu(GamePanel gp) {
         this.gp = gp;
@@ -22,6 +22,7 @@ public class Menu {
             bonusSpeed = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_BONUS_SPEED));
             enemyNorm = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY));
             enemyBoss = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY_ADVANCED));
+            bonusShieldImg = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_BONUS_SHIELD));
         } catch(Exception e) { e.printStackTrace(); }
     }
 
@@ -75,12 +76,16 @@ public class Menu {
         y += 60;  g2.drawString("3. Boutique", x, y);
         y += 60;  g2.drawString("4. Volume", x, y);
         
+        y += 60;  g2.setColor(new Color(255, 100, 100));
+        g2.drawString("5. Quitter vers l'Écran Titre", x, y);
+        
         y += 100;
         g2.setFont(new Font("Verdana", Font.ITALIC, 22));
         g2.setColor(Color.yellow);
-        g2.drawString("Utilisez les touches 1, 2, 3 ou 4 de votre clavier.", x - 50, y);
-    }
+        // MODIFIÉ : 1 à 5 au lieu de 1 à 4
+        g2.drawString("Utilisez les touches de 1 à 5 de votre clavier.", x - 50, y);
 
+    }
     private void drawTouches(Graphics2D g2) {
         int x = 80, y = 120;
         drawTitle(g2, "TOUCHES", y);
@@ -131,6 +136,11 @@ public class Menu {
         y += 55;
         if (bonusSpeed != null) g2.drawImage(bonusSpeed, x, y - 25, 30, 30, null);
         g2.drawString(" Surchargeur Laser : Tir ultra-rapide temporaire", x + 40, y);
+    
+        // Bonus Bouclier
+        y += 40;
+        if (bonusShieldImg != null) g2.drawImage(bonusShieldImg, x, y - 25, 30, 30, null); // (Assure-toi d'avoir chargé l'image en haut de Menu.java)
+        g2.drawString(" Déflecteur : Absorbe 3 dégâts", x + 40, y);
     }
 
     private void drawBoutique(Graphics2D g2) {
@@ -145,17 +155,26 @@ public class Menu {
         g2.setFont(new Font("Verdana", Font.PLAIN, 26));
         y += 100; g2.drawString("Appuyez sur la touche correspondante pour acheter :", x, y);
         
+        // Article 1 : Vie
         y += 80; 
         g2.setColor(Color.green);
         g2.drawString("1. +1 Vie", x, y);
         g2.setColor(Color.lightGray);
         g2.drawString(" (Coût : "+system.GameConfig.PRICE_LIFE+" pts)", x + 130, y);
         
-        y += 70;
+        // Article 2 : Tir Rapide
+        y += 60;
         g2.setColor(Color.cyan);
         g2.drawString("2. Super Tir Rapide", x, y);
         g2.setColor(Color.lightGray);
-        g2.drawString(" (Coût : "+system.GameConfig.PRICE_BOOST+" pts)", x + 280, y);
+        g2.drawString(" (Coût : "+system.GameConfig.PRICE_BOOST+" pts)", x + 270, y);
+
+        // NOUVEAU - Article 3 : Bouclier
+        y += 60;
+        g2.setColor(new Color(170, 100, 255)); // Une belle couleur violette
+        g2.drawString("3. Bouclier (3 coups)", x, y);
+        g2.setColor(Color.lightGray);
+        g2.drawString(" (Coût : "+system.GameConfig.PRICE_SHIELD+" pts)", x + 290, y);
     }
 
     private void drawVolume(Graphics2D g2) {

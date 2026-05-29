@@ -20,6 +20,11 @@ public class Player extends Entity {
     public int shootCooldown = 0; 
     public int boostTimer = 0; // Ajout du timer pour le bonus de cadence
 
+    public int shieldHits = 0; // Nombre de coups restants au bouclier
+    public int lifeDisplayTimer = 0; // Chrono pour l'affichage UI de la vie
+    BufferedImage shieldImage; // L'image de l'effet bouclier
+
+
     public Player(GamePanel gp, KeyHandler keyH) {
         // x, y, largeur(40), hauteur(40), vitesse(8), vie(3)
         super(gp.screenWidth / 2 - (system.GameConfig.PLAYER_SIZE / 2), gp.screenHeight - 100, system.GameConfig.PLAYER_SIZE, system.GameConfig.PLAYER_SIZE, system.GameConfig.PLAYER_SPEED, system.GameConfig.PLAYER_MAX_LIFE);
@@ -28,6 +33,7 @@ public class Player extends Entity {
         // Chargement de l'image du joueur
         try {
             image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_PLAYER));
+            shieldImage = javax.imageio.ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_SHIELD_EFFECT));
         } catch (Exception e) { 
             e.printStackTrace(); 
         }
@@ -47,6 +53,10 @@ public class Player extends Entity {
         else if (life <= 1) {
             speed = system.GameConfig.PLAYER_SPEED - 5; // Gros malus de vitesse (-2 vies)
             currentBaseCooldown = system.GameConfig.PLAYER_NORMAL_COOLDOWN + 15; // Malus de cadence (tire plus lentement)
+        }
+
+        if(lifeDisplayTimer > 0) {
+            lifeDisplayTimer--;
         }
 
         // Déplacement latéral
@@ -97,6 +107,11 @@ public class Player extends Entity {
             // Dessin de secours si l'image ne charge pas
             g2.setColor(Color.white);
             g2.fillRect(x, y, width, height);
+        }
+
+        if(shieldHits > 0 && shieldImage != null) {
+            // On l'affiche légèrement plus grand que le vaisseau pour faire une bulle
+            g2.drawImage(shieldImage, x - 10, y - 15, width + 20, height + 20, null);
         }
 
         // Dessin des tirs

@@ -58,36 +58,34 @@ public class CollisionManager {
 
     // Collision joueur ↔ ennemi
     private void checkPlayerEnemy() {
-
         for(int i = gp.enemies.size() - 1; i >= 0; i--) {
             Enemy e = gp.enemies.get(i);
-
             if(gp.player.getBounds().intersects(e.getBounds())) {
                 gp.enemies.remove(i);
-                gp.player.life--;
+                // MODIFIÉ : Le bouclier encaisse d'abord
+                if(gp.player.shieldHits > 0) gp.player.shieldHits--;
+                else gp.player.life--;
             }
         }
     }
 
     // Collision joueur ↔ bonus
     private void checkPlayerBonus() {
-
         for(int i = gp.bonuses.size() - 1; i >= 0; i--) {
             Bonus b = gp.bonuses.get(i);
-
             if(gp.player.getBounds().intersects(b.getBounds())) {
 
-                // Bonus vie
                 if(b.type == 0) {
                     gp.player.addLife(1);
+                    gp.player.lifeDisplayTimer = system.GameConfig.LIFE_DISPLAY_TIME; // Déclenche l'UI
                 }
-
-                // Bonus tir rapide
-                if(b.type == 1) {
+                else if(b.type == 1) {
                     gp.player.shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;
                     gp.player.boostTimer = system.GameConfig.BOOST_DURATION_BONUS;
                 }
-
+                else if(b.type == 2) { // NOUVEAU : Le bouclier
+                    gp.player.shieldHits = system.GameConfig.SHIELD_MAX_HITS;
+                }
                 gp.bonuses.remove(i);
             }
         }
@@ -95,19 +93,14 @@ public class CollisionManager {
 
     // Collision tir ennemi ↔ joueur
     private void checkProjectilePlayer() {
-        
-        // On parcourt tous les ennemis
         for(int i = gp.enemies.size() - 1; i >= 0; i--) {
             Enemy e = gp.enemies.get(i);
-            
-            // On parcourt tous les projectiles de CET ennemi
             for(int j = e.projectiles.size() - 1; j >= 0; j--) {
                 Projectile p = e.projectiles.get(j);
-                
-                // Si le tir touche le joueur
                 if(gp.player.getBounds().intersects(p.getBounds())) {
-                    gp.player.life--;         // Le joueur perd une vie
-                    e.projectiles.remove(j);  // Le tir disparaît
+                    e.projectiles.remove(j);
+                    if(gp.player.shieldHits > 0) gp.player.shieldHits--;
+                    else gp.player.life--;
                 }
             }
         }

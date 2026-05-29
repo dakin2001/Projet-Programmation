@@ -26,7 +26,11 @@ public class Bonus {
         this.type = type;
 
         try {
-            String path = (type == 0) ? GameConfig.IMG_BONUS_LIFE : GameConfig.IMG_BONUS_SPEED;
+            String path = "";
+            if (type == 0) path = GameConfig.IMG_BONUS_LIFE;
+            else if (type == 1) path = GameConfig.IMG_BONUS_SPEED;
+            else if (type == 2) path = GameConfig.IMG_BONUS_SHIELD; // Le petit bouclier violet
+            
             image = ImageIO.read(getClass().getResourceAsStream(path));
         } catch (Exception e) { e.printStackTrace(); }
     }

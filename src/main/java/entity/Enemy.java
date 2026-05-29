@@ -29,7 +29,6 @@ public class Enemy extends Entity {
         this.gp = gp;
         this.type = type;
 
-        // CONFIGURATION SELON LE TYPE AVEC LES CONSTANTES
         try {
             if (type == 1) {
                 image = ImageIO.read(getClass().getResourceAsStream(system.GameConfig.IMG_ENEMY));

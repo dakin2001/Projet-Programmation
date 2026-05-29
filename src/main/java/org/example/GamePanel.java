@@ -33,9 +33,6 @@ public class GamePanel extends JPanel implements Runnable {
     UI ui = new UI(this);
 
     // Paramètres écran
-    final int tileSize = 48;
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
     public final int screenWidth = system.GameConfig.SCREEN_WIDTH; // tileSize * maxScreenCol;
     public final int screenHeight = system.GameConfig.SCREEN_HEIGHT; // tileSize * maxScreenRow;
 
@@ -266,7 +263,7 @@ public class GamePanel extends JPanel implements Runnable {
         bonusTimer--;
         if(bonusTimer <= 0) {
             int x = random.nextInt(screenWidth - 30);
-            int type = random.nextInt(2);
+            int type = random.nextInt(3); // MODIFIÉ : 3 au lieu de 2 !
             bonuses.add(new Bonus(x, 0, type));
             bonusTimer = system.GameConfig.BONUS_SPAWN_RATE;
         }

@@ -69,6 +69,9 @@ public class KeyHandler implements KeyListener {
                 if(code == KeyEvent.VK_2 || code == KeyEvent.VK_NUMPAD2) gp.menu.page = 2;
                 if(code == KeyEvent.VK_3 || code == KeyEvent.VK_NUMPAD3) gp.menu.page = 3;
                 if(code == KeyEvent.VK_4 || code == KeyEvent.VK_NUMPAD4) gp.menu.page = 4;
+                if(code == KeyEvent.VK_5 || code == KeyEvent.VK_NUMPAD5) {
+                    gp.restartGame();
+                }
             }
             
             // Achats dans la Boutique (page 3)
@@ -88,6 +91,14 @@ public class KeyHandler implements KeyListener {
                         gp.scoreManager.score -= system.GameConfig.PRICE_BOOST;  // Déduit les points
                         gp.player.boostTimer += system.GameConfig.BOOST_DURATION_SHOP;   // Gros bonus de temps
                         gp.player.shootCooldown = system.GameConfig.PLAYER_BOOST_COOLDOWN;   // Cadence max
+                    }
+                }
+
+                // Achat 3 : Bouclier 
+                if(code == KeyEvent.VK_3 || code == KeyEvent.VK_NUMPAD3) {
+                    if(gp.scoreManager.score >= system.GameConfig.PRICE_SHIELD && gp.player.life > 0) {
+                        gp.scoreManager.score -= system.GameConfig.PRICE_SHIELD; 
+                        gp.player.shieldHits = system.GameConfig.SHIELD_MAX_HITS; // Active les 3 coups !
                     }
                 }
             }

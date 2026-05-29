@@ -10,12 +10,16 @@ public class UI {
 
     GamePanel gp;
     BufferedImage lifeFull, lifeEmpty;
+    BufferedImage bonusLifeImg, bonusSpeedImg, bonusShieldImg;
 
     public UI(GamePanel gp) {
         this.gp = gp;
         try {
             lifeFull = ImageIO.read(getClass().getResourceAsStream(GameConfig.IMG_HEART_FULL));
             lifeEmpty = ImageIO.read(getClass().getResourceAsStream(GameConfig.IMG_HEART_EMPTY));
+            bonusLifeImg = ImageIO.read(getClass().getResourceAsStream(GameConfig.IMG_BONUS_LIFE));
+            bonusSpeedImg = ImageIO.read(getClass().getResourceAsStream(GameConfig.IMG_BONUS_SPEED));
+            bonusShieldImg = ImageIO.read(getClass().getResourceAsStream(GameConfig.IMG_BONUS_SHIELD));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -34,6 +38,19 @@ public class UI {
         g2.drawString(text, x, y);
     }
 
+    private void drawActiveBonus(Graphics2D g2, BufferedImage img, String text, int x, int y) {
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRoundRect(x, y, 160, 50, 15, 15);
+        g2.setColor(Color.gray);
+        g2.drawRoundRect(x, y, 160, 50, 15, 15);
+        
+        if(img != null) g2.drawImage(img, x + 10, y + 10, 30, 30, null);
+        
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Verdana", Font.BOLD, 18));
+        g2.drawString(text, x + 50, y + 32);
+    }
+
     public void draw(Graphics2D g2) {
 
         // Affiche le score et le niveau
@@ -43,7 +60,6 @@ public class UI {
             g2.drawString("Score: " + gp.scoreManager.score, 20, 30);
             g2.drawString("Niveau: " + gp.currentLevel, 20, 60);
             
-            // --- NOUVEAU : AFFICHAGE DU TIMER ---
             String timeText = gp.scoreManager.getFormattedTime();
             g2.setFont(new Font("Verdana", Font.BOLD, 24));
             int textLength = (int)g2.getFontMetrics().getStringBounds(timeText, g2).getWidth();
@@ -71,6 +87,25 @@ public class UI {
                 if (img != null) {
                     g2.drawImage(img, xStart + (i * size), y, size, size, null);
                 }
+            }
+
+            int bonusY = gp.screenHeight - 70; // On commence en bas
+            int bonusX = 20;
+
+            // Affiche le message de Vie (Priorité basse)
+            if (gp.player.lifeDisplayTimer > 0) {
+                drawActiveBonus(g2, bonusLifeImg, "+1 Vie !", bonusX, bonusY);
+                bonusY -= 60; // On remonte pour le prochain
+            }
+            // Affiche le Bouclier
+            if (gp.player.shieldHits > 0) {
+                drawActiveBonus(g2, bonusShieldImg, gp.player.shieldHits + " Coups", bonusX, bonusY);
+                bonusY -= 60;
+            }
+            // Affiche le Tir Rapide
+            if (gp.player.boostTimer > 0) {
+                int seconds = gp.player.boostTimer / GameConfig.FPS;
+                drawActiveBonus(g2, bonusSpeedImg, seconds + "s restants", bonusX, bonusY);
             }
         }
 
@@ -120,7 +155,7 @@ public class UI {
             g2.setFont(new Font("Verdana", Font.PLAIN, 20));
             drawCenteredTextWithShadow(g2, "Appuyez sur M pour le Menu (Règles, Boutique...)", gp.screenHeight/2 + 100, Color.lightGray);
 
-            // --- MODIFICATION : TOP 3 MEILLEURS TEMPS ---
+            // TOP 3 MEILLEURS TEMPS
             int yTop = gp.screenHeight/2 + 180; 
             g2.setFont(new Font("Verdana", Font.BOLD, 25));
             drawCenteredTextWithShadow(g2, "- TOP 3 MEILLEURS TEMPS -", yTop, Color.yellow);
